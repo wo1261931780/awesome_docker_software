@@ -1,0 +1,38 @@
+services:
+  netdata:
+    image: netdata/netdata
+    container_name: netdata
+    # 移除 network_mode: host，因为在 Windows 上不完全支持
+    # network_mode: host
+    # 通过端口映射暴露 Netdata 的默认端口
+    ports:
+      - "19999:19999"
+    restart: unless-stopped
+    cap_add:
+      - SYS_PTRACE
+      - SYS_ADMIN
+    security_opt:
+      - apparmor:unconfined
+    volumes:
+      - ./netdataconfig/netdata:/etc/netdata
+      - netdatalib:/var/lib/netdata
+      - netdatacache:/var/cache/netdata
+      # 移除以下与 Linux 系统相关的挂载
+      # - /:/host/root:ro,rslave
+      # - /etc/passwd:/host/etc/passwd:ro
+      # - /etc/group:/host/etc/group:ro
+      # - /etc/localtime:/etc/localtime:ro
+      # - /proc:/host/proc:ro
+      # - /sys:/host/sys:ro
+      # - /etc/os-release:/host/etc/os-release:ro
+      # - /var/log:/host/var/log:ro
+      # - /var/run/docker.sock:/var/run/docker.sock:ro
+      # 如果需要访问特定的 Windows 目录，可以按照以下格式添加挂载
+      # 例如，挂载 Windows 的某个目录到容器内
+      # - C:/Users/junw/Downloads/dockerNewOne/netdata/some_directory:/host/some_directory:ro
+    # 可选：如果需要更多权限，可以启用特权模式（不推荐，除非必要）
+    # privileged: true
+
+volumes:
+  netdatalib:
+  netdatacache:
